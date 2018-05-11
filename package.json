@@ -12,6 +12,8 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
+    "credential": "^2.0.0",
+    "jwt-simple": "^0.5.1",
     "mysql2": "^1.5.3",
     "node-sass-middleware": "^0.11.0",
     "passport": "^0.4.0",
