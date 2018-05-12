@@ -103,8 +103,7 @@ export default {
           'maxResults': 10,
           'orderBy': 'startTime'
         }).then(response => {
-          vm.items = this.syntaxHighlight(response.result.items);
-          console.log( response )
+          vm.items = this.syntaxHighlight(response.result.items)
           console.log(vm.items);
         });
       },
