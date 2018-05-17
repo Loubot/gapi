@@ -42,19 +42,40 @@ export default {
             this.api.load( 'client:auth2', this.initClient )
         },
 
-        initClient() {
-            let vm = this;
+        updateSigninStatus(isSignedIn) {
+            console.log( 'by jaysus' )
+            if (isSignedIn) {
+                // authorizeButton.style.display = 'none';
+                // signoutButton.style.display = 'block';
+                listUpcomingEvents();
+            } else {
+                console.log( 'not signed in')
+                // authorizeButton.style.display = 'block';
+                // signoutButton.style.display = 'none';
+            }
+        },
 
+        initClient() {
+            let vm = this
+            console.log( 'hup')
             vm.api.client.init({
                 apiKey: API_KEY,
                 clientId: CLIENT_ID,
                 discoveryDocs: DISCOVERY_DOCS,
                 scope: SCOPES
-            }).then(_ => {
-                // Listen for sign-in state changes.
-                vm.api.auth2.getAuthInstance().isSignedIn.listen(vm.authorized);
-            });
-        }
+            }).then(function () {
+                console.log( 'bla ')
+                      // Listen for sign-in state changes.
+                gapi.auth2.getAuthInstance().isSignedIn.listen(vm.updateSigninStatus)
+
+                      // Handle the initial sign-in state.
+                vm.updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+                // authorizeButton.onclick = handleAuthClick;
+                // signoutButton.onclick = handleSignoutClick;
+            })
+        },
+
+        
 
     }
 
