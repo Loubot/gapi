@@ -3,8 +3,8 @@
       <div class='authentification'>
         <h2>VueJS + Google Calendar Example</h2>
         Authentification
-        <button v-if='!authorized' @click="">Sign In</button>
-        <button v-if='authorized' @click="">Sign Out</button>
+        <button v-if='!authorized' @click="handleAuthClick">Sign In</button>
+        <button v-if='authorized' @click="handleSignoutClick">Sign Out</button>
       </div>
       <hr>
       <button v-if='authorized' @click="">Get Data</button>
@@ -47,7 +47,7 @@ export default {
             if (isSignedIn) {
                 // authorizeButton.style.display = 'none';
                 // signoutButton.style.display = 'block';
-                listUpcomingEvents();
+                this.listUpcomingEvents();
             } else {
                 console.log( 'not signed in')
                 // authorizeButton.style.display = 'block';
@@ -74,7 +74,45 @@ export default {
                 // signoutButton.onclick = handleSignoutClick;
             })
         },
+        handleAuthClick(event) {
+            console.log( event )
+            gapi.auth2.getAuthInstance().signIn().then( function( res ) {
+                console.log( res )
+            }).catch( function( err ) {
+                console.log( err )
+            })
+        },
+        handleSignoutClick(event) {
+            gapi.auth2.getAuthInstance().signOut();
+        },
 
+        listUpcomingEvents() {
+            gapi.client.calendar.events.list({
+            'calendarId': 'primary',
+            'timeMin': (new Date()).toISOString(),
+            'showDeleted': false,
+            'singleEvents': true,
+            'maxResults': 10,
+            'orderBy': 'startTime'
+        }).then(function(response) {
+            var events = response.result.items;
+            // appendPre('Upcoming events:');
+            var i;
+            console.log( events )
+            if (events.length > 0) {
+                for (i = 0; i < events.length; i++) {
+                var event = events[i];
+                var when = event.start.dateTime;
+                if (!when) {
+                    when = event.start.date;
+                }
+                // appendPre(event.summary + ' (' + when + ')')
+                }
+            } else {
+                // appendPre('No upcoming events found.');
+            }
+        });
+      }
         
 
     }
