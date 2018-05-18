@@ -14,10 +14,22 @@
 
         <h1>My Calendar</h1>
             <calendar-view
+                :events="events"
                 :show-date="showDate"
+                :time-format-options="{hour: 'numeric', minute:'2-digit'}"
+                :enable-drag-drop="true"
+                :disable-past="disablePast"
+                :disable-future="disableFuture"
+                :show-event-times="showEventTimes"
+                :display-period-uom="displayPeriodUom"
+                :display-period-count="displayPeriodCount"
+                :starting-day-of-week="startingDayOfWeek"
+                :class="themeClasses"
+                @drop-on-date="onDrop"
+                @click-date="onClickDay"
+                @click-event="onClickEvent"
                 @show-date-change="setShowDate"
-                class="theme-default holiday-us-traditional holiday-us-official"
-        />
+            />
         
     </div>
 </template>
@@ -31,33 +43,94 @@ const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v
 // included, separated by spaces.
 const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 import CalendarView from "vue-simple-calendar"
-    // The next two lines are processed by webpack. If you're using the component without webpack compilation,
-    // you should just create <link> elements for these as you would normally for CSS files. Both of these
-    // CSS files are optional, you can create your own theme if you prefer.
+import CalendarMathMixin from "vue-simple-calendar/dist/calendar-math-mixin.js"
 require("vue-simple-calendar/dist/static/css/default.css")
 require("vue-simple-calendar/dist/static/css/holidays-us.css")
 
 export default {
   name: 'HelloWorld',
+  components : {
+       CalendarView
+  },
+  mixins: [CalendarMathMixin],
   data() {
       return {
         items: undefined,
         api: undefined,
         authorized: false,
-        showDate: new Date() 
-
+        showDate: new Date(),
+        showDate: this.thisMonth(1),
+        message: "",
+        startingDayOfWeek: 0,
+        disablePast: false,
+        disableFuture: false,
+        displayPeriodUom: "month",
+        displayPeriodCount: 1,
+        showEventTimes: true,
+        newEventTitle: "",
+        newEventStartDate: "",
+        newEventEndDate: "",
+        useDefaultTheme: true,
+        useHolidayTheme: true,
+        events: [
+                    {
+                        startDate: new Date(),
+                        endDate: new Date().getHours() + 2,
+                        title: 'bla'
+                    },
+                        
+                    {
+                        id: "e3",
+                        startDate: this.thisMonth(20, 10, 27),
+                        endDate: this.thisMonth(21, 16, 30),
+                        title: "Multi-day event with a long title and times",
+                    },
+                    
+                ],
       }
     },
-    components : {
-         CalendarView
-    },
+    
 
     created() {
         this.api = gapi
         this.handleClientLoad()
+
     },
 
     methods: {
+        thisMonth(d, h, m) {
+            const t = new Date()
+            var x =  new Date(t.getFullYear(), t.getMonth(), d, h || 0, m || 0)
+            console.log( new Date() )
+            return x
+        },
+
+        onClickDay(d) {
+            this.message = `You clicked: ${d.toLocaleDateString()}`
+        },
+        onClickEvent(e) {
+            this.message = `You clicked: ${e.title}`
+        },
+        setShowDate(d) {
+            this.message = `Changing calendar view to ${d.toLocaleDateString()}`
+            this.showDate = d
+        },
+        onDrop(event, date) {
+            this.message = `You dropped ${event.id} on ${date.toLocaleDateString()}`
+            // Determine the delta between the old start date and the date chosen,
+            // and apply that delta to both the start and end date to move the event.
+            const eLength = this.dayDiff(event.startDate, date)
+            event.originalEvent.startDate = this.addDays(event.startDate, eLength)
+            event.originalEvent.endDate = this.addDays(event.endDate, eLength)
+        },
+        clickTestAddEvent() {
+            this.events.push({
+                startDate: this.newEventStartDate,
+                endDate: this.newEventEndDate,
+                title: this.newEventTitle,
+            })
+            this.message = "You added an event!"
+        },
         setShowDate(d) {
             this.showDate = d;
         },
