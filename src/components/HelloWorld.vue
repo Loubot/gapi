@@ -11,7 +11,7 @@
       <div class="item-container" v-if="authorized && items">
         <pre v-html="items"></pre>
       </div>
-        <full-calendar :events="fcEvents" locale="en"></full-calendar>
+        
     </div>
 </template>
 
@@ -26,10 +26,12 @@ const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 var demoEvents = [
     {
       title : 'Sunny Out of Office',
-      start : '2016-08-25',
-      end : '2017-07-27'
+      start : '2018-08-25',
+      end : '2018-08-29'
     }
 ]
+
+
 export default {
   name: 'HelloWorld',
   data() {
@@ -37,12 +39,12 @@ export default {
         items: undefined,
         api: undefined,
         authorized: false,
-        fcEvents : demoEvents
+        
 
       }
     },
     components : {
-        'full-calendar': require('vue-fullcalendar')    
+         
     },
 
     created() {
@@ -114,13 +116,14 @@ export default {
             console.log( events )
             if (events.length > 0) {
                 for (i = 0; i < events.length; i++) {
-                var event = events[i];
-                var when = event.start.dateTime;
-                if (!when) {
-                    when = event.start.date;
-                }
+                    console.log( events[i])
+                    var event = events[i];
+                    var when = event.start.dateTime;
+                    if (!when) {
+                        when = event.start.date;
+                    }
                 // appendPre(event.summary + ' (' + when + ')')
-                }
+                    }
             } else {
                 // appendPre('No upcoming events found.');
             }
