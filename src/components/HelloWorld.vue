@@ -11,6 +11,13 @@
       <div class="item-container" v-if="authorized && items">
         <pre v-html="items"></pre>
       </div>
+
+        <h1>My Calendar</h1>
+            <calendar-view
+                :show-date="showDate"
+                @show-date-change="setShowDate"
+                class="theme-default holiday-us-traditional holiday-us-official"
+        />
         
     </div>
 </template>
@@ -23,14 +30,12 @@ const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v
 // Authorization scopes required by the API; multiple scopes can be
 // included, separated by spaces.
 const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-var demoEvents = [
-    {
-      title : 'Sunny Out of Office',
-      start : '2018-08-25',
-      end : '2018-08-29'
-    }
-]
-
+import CalendarView from "vue-simple-calendar"
+    // The next two lines are processed by webpack. If you're using the component without webpack compilation,
+    // you should just create <link> elements for these as you would normally for CSS files. Both of these
+    // CSS files are optional, you can create your own theme if you prefer.
+require("vue-simple-calendar/dist/static/css/default.css")
+require("vue-simple-calendar/dist/static/css/holidays-us.css")
 
 export default {
   name: 'HelloWorld',
@@ -39,12 +44,12 @@ export default {
         items: undefined,
         api: undefined,
         authorized: false,
-        
+        showDate: new Date() 
 
       }
     },
     components : {
-         
+         CalendarView
     },
 
     created() {
@@ -53,6 +58,9 @@ export default {
     },
 
     methods: {
+        setShowDate(d) {
+            this.showDate = d;
+        },
         handleClientLoad() {
             this.api.load( 'client:auth2', this.initClient )
         },
