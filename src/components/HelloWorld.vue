@@ -11,6 +11,7 @@
       <div class="item-container" v-if="authorized && items">
         <pre v-html="items"></pre>
       </div>
+        <full-calendar :events="fcEvents" locale="en"></full-calendar>
     </div>
 </template>
 
@@ -22,14 +23,26 @@ const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v
 // Authorization scopes required by the API; multiple scopes can be
 // included, separated by spaces.
 const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+var demoEvents = [
+    {
+      title : 'Sunny Out of Office',
+      start : '2016-08-25',
+      end : '2017-07-27'
+    }
+]
 export default {
   name: 'HelloWorld',
   data() {
       return {
         items: undefined,
         api: undefined,
-        authorized: false
+        authorized: false,
+        fcEvents : demoEvents
+
       }
+    },
+    components : {
+        'full-calendar': require('vue-fullcalendar')    
     },
 
     created() {
