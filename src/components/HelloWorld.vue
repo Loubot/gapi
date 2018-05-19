@@ -1,18 +1,107 @@
 <template>
     <div id="app">
-      <div class='authentification'>
-        <h2>VueJS + Google Calendar Example</h2>
-        Authentification
-        <button v-if='!authorized' @click="handleAuthClick">Sign In</button>
-        <button v-if='authorized' @click="handleSignoutClick">Sign Out</button>
-      </div>
-      <hr>
-      <button v-if='authorized' @click="">Get Data</button>
-      <div class="item-container" v-if="authorized && items">
+        <div class='authentification'>
+            <h2>VueJS + Google Calendar Example</h2>
+            Authentification
+            <button v-if='!authorized' @click="handleAuthClick">Sign In</button>
+            <button v-if='authorized' @click="handleSignoutClick">Sign Out</button>
+        </div>
+        <hr>
+        <button v-if='authorized' @click="">Get Data</button>
+        <div class="item-container" v-if="authorized && items">
         <pre v-html="items"></pre>
-      </div>
+        </div>
 
-        <h1>My Calendar</h1>
+        <div class="calendar-controls">
+
+            <div v-if="message" class="notification is-success">{{ message }}</div>
+
+            <div class="box">
+
+                <h4 class="title is-5">Play with the options!</h4>
+
+                <div class="field">
+                    <label class="label">Period UOM</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="displayPeriodUom">
+                                <option>month</option>
+                                <option>week</option>
+                                <option>year</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Period Count</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="displayPeriodCount">
+                                <option :value="1">1</option>
+                                <option :value="2">2</option>
+                                <option :value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Starting day of the week</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="startingDayOfWeek">
+                                <option
+                                    v-for="(d, index) in dayNames"
+                                    :value="index"
+                                    :key="index">{{ d }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Themes</label>
+                    <label class="checkbox">Default</label>
+                    <input v-model="useDefaultTheme" type="checkbox">
+                </div>
+
+                <div class="field">
+                    <label class="checkbox">Holidays</label>
+                    <input v-model="useHolidayTheme" type="checkbox">
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="field">
+                    <label class="label">Title</label>
+                    <div class="control">
+                        <input v-model="newEventTitle" class="input" type="text">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Start date</label>
+                    <div class="control">
+                        <input v-model="newEventStartDate" class="input" type="date">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">End date</label>
+                    <div class="control">
+                        <input v-model="newEventEndDate" class="input" type="date">
+                    </div>
+                </div>
+
+                <button class="button is-info" @click="clickTestAddEvent">Add Event</button>
+            </div>
+
+        </div>
+        
+        <div class="calendar-parent">
+
+            <h1>My Calendar</h1>
             <calendar-view
                 :events="events"
                 :show-date="showDate"
@@ -30,6 +119,7 @@
                 @click-event="onClickEvent"
                 @show-date-change="setShowDate"
             />
+        </div>
         
     </div>
 </template>
@@ -212,7 +302,26 @@ export default {
       }
         
 
-    }
+    },
+    computed: {
+        userLocale() {
+            return this.getDefaultBrowserLocale
+        },
+        dayNames() {
+            return this.getFormattedWeekdayNames(this.userLocale, "long", 0)
+        },
+        themeClasses() {
+            return {
+                "theme-default": this.useDefaultTheme,
+                "holiday-us-traditional": this.useHolidayTheme,
+                "holiday-us-official": this.useHolidayTheme,
+            }
+        },
+    },
+    mounted() {
+        this.newEventStartDate = this.isoYearMonthDay(this.today())
+        this.newEventEndDate = this.isoYearMonthDay(this.today())
+    },
 
     
 }
@@ -220,18 +329,58 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: #f7fcff;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+#app {
+    display: flex;
+    flex-direction: row;
+    font-family: Calibri, sans-serif;
+    width: 95vw;
+    min-width: 30rem;
+    max-width: 100rem;
+    min-height: 40rem;
+    margin-left: auto;
+    margin-right: auto;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+.calendar-controls {
+    margin-right: 1rem;
+    min-width: 14rem;
+    max-width: 14rem;
 }
-a {
-  color: #42b983;
+
+.calendar-parent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    max-height: 80vh;
+    background-color: white;
+}
+
+/* For long calendars, ensure each week gets sufficient height. The body of the calendar will scroll if needed */
+.cv-wrapper.period-month.periodCount-2 .cv-week,
+.cv-wrapper.period-month.periodCount-3 .cv-week,
+.cv-wrapper.period-year .cv-week {
+    min-height: 6rem;
+}
+
+/* These styles are optional, to illustrate the flexbility of styling the calendar purely with CSS. */
+
+/* Add some styling for events tagged with the "birthday" class */
+.calendar .event.birthday {
+    background-color: #e0f0e0;
+    border-color: #d7e7d7;
+}
+
+.calendar .event.birthday::before {
+    content: "\1F382";
+    margin-right: 0.5em;
 }
 </style>
