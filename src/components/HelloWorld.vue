@@ -98,7 +98,7 @@
             </div>
 
         </div>
-        
+
         <div class="calendar-parent">
 
             <h1>My Calendar</h1>
@@ -273,6 +273,7 @@ export default {
         },
 
         listUpcomingEvents() {
+            let vm = this
             gapi.client.calendar.events.list({
             'calendarId': 'primary',
             'timeMin': (new Date()).toISOString(),
@@ -281,18 +282,56 @@ export default {
             'maxResults': 10,
             'orderBy': 'startTime'
         }).then(function(response) {
-            var events = response.result.items;
+            console.log( response.result.items[0] )
+            // events: [
+            //             {
+            //                 startDate: new Date(),
+            //                 endDate: new Date().getHours() + 2,
+            //                 title: 'bla'
+            //             },
+                            
+            //             {
+            //                 id: "e3",
+            //                 startDate: this.thisMonth(20, 10, 27),
+            //                 endDate: this.thisMonth(21, 16, 30),
+            //                 title: "Multi-day event with a long title and times",
+            //             },
+                        
+            //         ]
+            // vm.events = [
+            //     {
+            //         startDate: new Date(),
+            //         endDate: new Date().getHours() + 2,
+            //         title: 'bla'
+            //     },
+                    
+            //     {
+            //         id: "e3",
+            //         startDate: vm.thisMonth(20, 10, 27),
+            //         endDate: vm.thisMonth(21, 16, 30),
+            //         title: "Multi-day event with a long title and times",
+            //     }
+            // ]
+            vm.events = []
+            // vm.events = response.result.items
+            // var events = response.result.items;
             // appendPre('Upcoming events:');
             var i;
-            console.log( events )
-            if (events.length > 0) {
-                for (i = 0; i < events.length; i++) {
-                    console.log( events[i])
-                    var event = events[i];
-                    var when = event.start.dateTime;
-                    if (!when) {
-                        when = event.start.date;
-                    }
+            console.log( response.result.items[0].start )
+            if ( response.result.items.length > 0) {
+                for (i = 0; i < response.result.items.length; i++) {
+
+                    vm.events.push({
+                        startDate:  response.result.items[i].start.dateTime,
+                        endDate: response.result.items[i].end.dateTime,
+                        title: response.result.items[i].summary
+                    })
+                    // console.log( vm.events[i])
+                    // var event = vm.events[i];
+                    // var when = event.start.dateTime;
+                    // if (!when) {
+                    //     when = event.start.date;
+                    // }
                 // appendPre(event.summary + ' (' + when + ')')
                     }
             } else {
