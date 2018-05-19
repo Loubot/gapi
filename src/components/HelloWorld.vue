@@ -94,7 +94,7 @@
                     </div>
                 </div>
 
-                <button class="button is-info" @click="clickTestAddEvent">Add Event</button>
+                <button class="button is-info" @click="insertEvent">Add Event</button>
             </div>
 
         </div>
@@ -125,13 +125,15 @@
 </template>
 
 <script>
-const CLIENT_ID = '791741156907-3uoc7t4t9bp4aahcfjtfgilm0lrn954c.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyCoDGu3zWdK64CdDvxBziRVyMSoPIQyppo';
+const CLIENT_ID = '610350486752-prapm3i4tvrtal1l7i4s2nfvm5uje8dd.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyB-Feh-j_ZSCAottMYU0587HoKskTUECjc';
+
+/* client secret: Nwuitg82M-Q1JxIG8eEY1j3d*/
 // Array of API discovery doc URLs for APIs used by the quickstart
 const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
 // Authorization scopes required by the API; multiple scopes can be
 // included, separated by spaces.
-const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+const SCOPES = 'https://www.googleapis.com/auth/calendar';
 import CalendarView from "vue-simple-calendar"
 import CalendarMathMixin from "vue-simple-calendar/dist/calendar-math-mixin.js"
 require("vue-simple-calendar/dist/static/css/default.css")
@@ -309,6 +311,34 @@ export default {
                 // appendPre('No upcoming events found.');
             }
         });
+      },
+
+
+      insertEvent() {
+        let vm = this
+
+        var event = {
+            
+            'summart': 'test bla',
+            'description': 'description',
+            'start': {'dateTime': "2018-05-20T13:00:00+01:00" },
+            'end': { 'dateTime': "2018-05-20T14:00:00+01:00" },
+            'attendees': [
+                { 'email': 'louisangelini@gmail.com' }
+            ],
+
+        }
+
+
+        gapi.client.calendar.events.insert({
+            'calendarId': 'primary',
+            'resource': event
+
+        }).then( function( res ) {
+            console.log( res )
+        }).catch( function( err ) {
+            console.log( err )
+        })
       }
         
 
