@@ -274,6 +274,11 @@ export default {
 
         listUpcomingEvents() {
             let vm = this
+
+            // gapi.client.calendar.calendarList.list({})
+            // .then( function( res ) {
+            //     console.log( res )
+            // })
             gapi.client.calendar.events.list({
             'calendarId': 'primary',
             'timeMin': (new Date()).toISOString(),
@@ -283,35 +288,7 @@ export default {
             'orderBy': 'startTime'
         }).then(function(response) {
             console.log( response.result.items[0] )
-            // events: [
-            //             {
-            //                 startDate: new Date(),
-            //                 endDate: new Date().getHours() + 2,
-            //                 title: 'bla'
-            //             },
-                            
-            //             {
-            //                 id: "e3",
-            //                 startDate: this.thisMonth(20, 10, 27),
-            //                 endDate: this.thisMonth(21, 16, 30),
-            //                 title: "Multi-day event with a long title and times",
-            //             },
-                        
-            //         ]
-            // vm.events = [
-            //     {
-            //         startDate: new Date(),
-            //         endDate: new Date().getHours() + 2,
-            //         title: 'bla'
-            //     },
-                    
-            //     {
-            //         id: "e3",
-            //         startDate: vm.thisMonth(20, 10, 27),
-            //         endDate: vm.thisMonth(21, 16, 30),
-            //         title: "Multi-day event with a long title and times",
-            //     }
-            // ]
+            
             vm.events = []
             // vm.events = response.result.items
             // var events = response.result.items;
@@ -326,14 +303,8 @@ export default {
                         endDate: response.result.items[i].end.dateTime,
                         title: response.result.items[i].summary
                     })
-                    // console.log( vm.events[i])
-                    // var event = vm.events[i];
-                    // var when = event.start.dateTime;
-                    // if (!when) {
-                    //     when = event.start.date;
-                    // }
-                // appendPre(event.summary + ' (' + when + ')')
-                    }
+                   
+                }
             } else {
                 // appendPre('No upcoming events found.');
             }
