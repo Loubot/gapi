@@ -73,17 +73,41 @@
 
                     <div class="box">
                         <div class="field">
-                            <label class="label">Title</label>
                             <div class="control">
-                                <input v-model="newEventTitle" class="input" type="text">
+                                <v-text-field
+                                    label="Title"
+                                    v-model="newEventTitle" 
+                                    class="input" 
+                                    type="text"
+                                ></v-text-field>
+                                
                             </div>
                         </div>
 
                         <div class="field">
-                            <label class="label">Start date</label>
-                            <div class="control">
-                                <input v-model="newEventStartDate" class="input" type="date">
-                            </div>
+                            <v-menu
+                                    ref="menu2"
+                                    :close-on-content-click="false"
+                                    v-model="menu2"
+                                    :nudge-right="40"
+                                    :return-value.sync="date"
+                                    lazy
+                                    transition="scale-transition"
+                                    offset-y
+                                    full-width
+                                    min-width="290px"
+                            >
+                                <v-text-field
+                                  slot="activator"
+                                  v-model="newEventStartDate"
+                                  label="Start date"
+                                  prepend-icon="event"
+                                  readonly
+                                ></v-text-field>
+                                <v-date-picker v-model="newEventStartDate" ></v-date-picker>
+
+                            </v-menu>
+                            
                         </div>
 
                         <div class="field">
@@ -149,6 +173,8 @@ export default {
   mixins: [CalendarMathMixin],
   data() {
       return {
+        menu2: false,
+        date: null,
         items: undefined,
         api: undefined,
         authorized: false,
@@ -298,7 +324,7 @@ export default {
             // var events = response.result.items;
             // appendPre('Upcoming events:');
             var i;
-            console.log( response.result.items[0].start )
+            console.log( response.result.items )
             if ( response.result.items.length > 0) {
                 for (i = 0; i < response.result.items.length; i++) {
 
