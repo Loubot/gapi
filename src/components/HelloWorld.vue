@@ -1,125 +1,127 @@
 <template>
-    <div id="app">
-        <div class='authentification'>
-            <h2>VueJS + Google Calendar Example</h2>
-            Authentification
-            <button v-if='!authorized' @click="handleAuthClick">Sign In</button>
-            <button v-if='authorized' @click="handleSignoutClick">Sign Out</button>
-        </div>
-        <hr>
-        <button v-if='authorized' @click="">Get Data</button>
-        <div class="item-container" v-if="authorized && items">
-        <pre v-html="items"></pre>
-        </div>
 
-        <div class="calendar-controls">
-
-            <div v-if="message" class="notification is-success">{{ message }}</div>
-
-            <div class="box">
-
-                <h4 class="title is-5">Play with the options!</h4>
-
-                <div class="field">
-                    <label class="label">Period UOM</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="displayPeriodUom">
-                                <option>month</option>
-                                <option>week</option>
-                                <option>year</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label">Period Count</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="displayPeriodCount">
-                                <option :value="1">1</option>
-                                <option :value="2">2</option>
-                                <option :value="3">3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label">Starting day of the week</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="startingDayOfWeek">
-                                <option
-                                    v-for="(d, index) in dayNames"
-                                    :value="index"
-                                    :key="index">{{ d }}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label">Themes</label>
-                    <label class="checkbox">Default</label>
-                    <input v-model="useDefaultTheme" type="checkbox">
-                </div>
-
-                <div class="field">
-                    <label class="checkbox">Holidays</label>
-                    <input v-model="useHolidayTheme" type="checkbox">
-                </div>
+    <div >
+        <v-container grid-list-md text-xs-center>
+            <div class='authentification'>
+                <h2>VueJS + Google Calendar Example</h2>
+                Authentification
+                <button v-if='!authorized' @click="handleAuthClick">Sign In</button>
+                <button v-if='authorized' @click="handleSignoutClick">Sign Out</button>
             </div>
+            <v-layout row wrap>
+                
+                <!-- <hr> -->
+                <div class="calendar-controls">
 
-            <div class="box">
-                <div class="field">
-                    <label class="label">Title</label>
-                    <div class="control">
-                        <input v-model="newEventTitle" class="input" type="text">
+                    <div v-if="message" class="notification is-success">{{ message }}</div>
+
+                    <div class="box">
+
+                        <h4 class="title is-5">Play with the options!</h4>
+
+                        <div class="field">
+                            <label class="label">Period UOM</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="displayPeriodUom">
+                                        <option>month</option>
+                                        <option>week</option>
+                                        <option>year</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Period Count</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="displayPeriodCount">
+                                        <option :value="1">1</option>
+                                        <option :value="2">2</option>
+                                        <option :value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Starting day of the week</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="startingDayOfWeek">
+                                        <option
+                                            v-for="(d, index) in dayNames"
+                                            :value="index"
+                                            :key="index">{{ d }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Themes</label>
+                            <label class="checkbox">Default</label>
+                            <input v-model="useDefaultTheme" type="checkbox">
+                        </div>
+
+                        <div class="field">
+                            <label class="checkbox">Holidays</label>
+                            <input v-model="useHolidayTheme" type="checkbox">
+                        </div>
                     </div>
+
+                    <div class="box">
+                        <div class="field">
+                            <label class="label">Title</label>
+                            <div class="control">
+                                <input v-model="newEventTitle" class="input" type="text">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Start date</label>
+                            <div class="control">
+                                <input v-model="newEventStartDate" class="input" type="date">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">End date</label>
+                            <div class="control">
+                                <input v-model="newEventEndDate" class="input" type="date">
+                            </div>
+                        </div>
+
+                        <button class="button is-info" @click="insertEvent">Add Event</button>
+                    </div>
+
                 </div>
 
-                <div class="field">
-                    <label class="label">Start date</label>
-                    <div class="control">
-                        <input v-model="newEventStartDate" class="input" type="date">
-                    </div>
+                <div class="calendar-parent">
+
+                    <h1>My Calendar</h1>
+                    <calendar-view
+                        :events="events"
+                        :show-date="showDate"
+                        :time-format-options="{hour: 'numeric', minute:'2-digit'}"
+                        :enable-drag-drop="true"
+                        :disable-past="disablePast"
+                        :disable-future="disableFuture"
+                        :show-event-times="showEventTimes"
+                        :display-period-uom="displayPeriodUom"
+                        :display-period-count="displayPeriodCount"
+                        :starting-day-of-week="startingDayOfWeek"
+                        :class="themeClasses"
+                        @drop-on-date="onDrop"
+                        @click-date="onClickDay"
+                        @click-event="onClickEvent"
+                        @show-date-change="setShowDate"
+                    />
                 </div>
-
-                <div class="field">
-                    <label class="label">End date</label>
-                    <div class="control">
-                        <input v-model="newEventEndDate" class="input" type="date">
-                    </div>
-                </div>
-
-                <button class="button is-info" @click="insertEvent">Add Event</button>
-            </div>
-
-        </div>
-
-        <div class="calendar-parent">
-
-            <h1>My Calendar</h1>
-            <calendar-view
-                :events="events"
-                :show-date="showDate"
-                :time-format-options="{hour: 'numeric', minute:'2-digit'}"
-                :enable-drag-drop="true"
-                :disable-past="disablePast"
-                :disable-future="disableFuture"
-                :show-event-times="showEventTimes"
-                :display-period-uom="displayPeriodUom"
-                :display-period-count="displayPeriodCount"
-                :starting-day-of-week="startingDayOfWeek"
-                :class="themeClasses"
-                @drop-on-date="onDrop"
-                @click-date="onClickDay"
-                @click-event="onClickEvent"
-                @show-date-change="setShowDate"
-            />
-        </div>
+            </v-layout>
+            
+        </v-container>
         
     </div>
 </template>
