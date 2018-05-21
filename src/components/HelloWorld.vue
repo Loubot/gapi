@@ -76,7 +76,7 @@
                             <div class="control">
                                 <v-text-field
                                     label="Title"
-                                    v-model="newEventTitle" 
+                                    v-model="dateObject.newEventTitle" 
                                     class="input" 
                                     type="text"
                                 ></v-text-field>
@@ -86,9 +86,9 @@
 
                         <div class="field">
                             <v-menu
-                                ref="menu2"
-                                :close-on-content-click="false"
-                                v-model="menu2"
+                                ref="menu1"
+                                :close-on-content-click="true"
+                                v-model="menu1"
                                 :nudge-right="40"
                                 :return-value.sync="date"
                                 lazy
@@ -99,21 +99,22 @@
                             >
                                 <v-text-field
                                   slot="activator"
-                                  v-model="newEventStartDate"
+                                  v-model="dateObject.newEventStartDate"
                                   label="Start date"
                                   prepend-icon="event"
                                   readonly
                                 ></v-text-field>
-                                <v-date-picker v-model="newEventStartDate" ></v-date-picker>
+                                <v-date-picker v-model="dateObject.newEventStartDate" ></v-date-picker>
 
                             </v-menu>
+                            
                             <v-flex xs12 sm12>
                                 <v-menu
-                                    ref="menu4"
+                                    ref="menu2"
                                     :close-on-content-click="false"
-                                    v-model="menu4"
+                                    v-model="menu2"
                                     :nudge-right="40"
-                                    :return-value.sync="startTime"
+                                    :return-value.sync="date"
                                     lazy
                                     transition="scale-transition"
                                     offset-y
@@ -123,12 +124,12 @@
                                 >
                                     <v-text-field
                                       slot="activator"
-                                      v-model="startTime"
+                                      v-model="dateObject.startTime"
                                       label="Start time"
                                       prepend-icon="access_time"
                                       readonly
                                     ></v-text-field>
-                                    <v-time-picker v-model="startTime" @change="$refs.menu4.save(startTime)"></v-time-picker>
+                                    <v-time-picker v-model="dateObject.startTime" @change="$refs.menu4.save(startTime)"></v-time-picker>
                                 </v-menu>
                             </v-flex>
                             
@@ -136,9 +137,9 @@
 
                         <div class="field">
                             <v-menu
-                                ref="menu2"
-                                :close-on-content-click="false"
-                                v-model="menu2"
+                                ref="menu3"
+                                :close-on-content-click="true"
+                                v-model="menu3"
                                 :nudge-right="40"
                                 :return-value.sync="date"
                                 lazy
@@ -149,22 +150,22 @@
                             >
                                 <v-text-field
                                   slot="activator"
-                                  v-model="newEventEndDate"
+                                  v-model="dateObject.newEventEndDate"
                                   label="End date"
                                   prepend-icon="event"
                                   readonly
                                 ></v-text-field>
-                                <v-date-picker v-model="newEventEndDate" ></v-date-picker>
+                                <v-date-picker v-model="dateObject.newEventEndDate" ></v-date-picker>
 
                             </v-menu>
 
                             <v-flex xs12 sm12>
                                 <v-menu
-                                    ref="menu3"
+                                    ref="menu4"
                                     :close-on-content-click="false"
-                                    v-model="menu3"
+                                    v-model="menu4"
                                     :nudge-right="40"
-                                    :return-value.sync="endTime"
+                                    :return-value.sync="date"
                                     lazy
                                     transition="scale-transition"
                                     offset-y
@@ -174,12 +175,12 @@
                                 >
                                     <v-text-field
                                       slot="activator"
-                                      v-model="endTime"
+                                      v-model="dateObject.endTime"
                                       label="End time"
                                       prepend-icon="access_time"
                                       readonly
                                     ></v-text-field>
-                                    <v-time-picker v-model="endTime" @change="$refs.menu3.save(endTime)"></v-time-picker>
+                                    <v-time-picker v-model="dateObject.endTime" @change="$refs.menu3.save(endTime)"></v-time-picker>
                                 </v-menu>
                             </v-flex>
                             
@@ -214,9 +215,7 @@
             </v-layout>
             
         </v-container>
-
-        {{ startTime }}
-        
+        {{ dateObject }}
     </div>
 </template>
 
@@ -245,10 +244,12 @@ export default {
       return {
         startTime: null,
         endTime: null,
+        dateObject: {},
+        date: null,
+        menu1: false,
         menu2: false,
         menu3: false,
         menu4: false,
-        date: null,
         items: undefined,
         api: undefined,
         authorized: false,
@@ -418,20 +419,21 @@ export default {
 
       insertEvent() {
         let vm = this
-
+        console.log( vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime )
+        console.log( vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime )
         var event = {
-            
-            'summart': 'test bla',
+                
+            'summary': vm.dateObject.newEventTitle,
             'description': 'description',
-            'start': {'dateTime': "2018-05-20T13:00:00+01:00" },
-            'end': { 'dateTime': "2018-05-20T14:00:00+01:00" },
+            'start': {'dateTime': vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime + ":00+01:00"  },
+            'end': { 'dateTime': vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime + ":00+01:00" },
             'attendees': [
                 { 'email': 'louisangelini@gmail.com' }
             ],
 
         }
 
-
+        // "2018-05-20T14:00:00+01:00" 
         gapi.client.calendar.events.insert({
             'calendarId': 'primary',
             'resource': event
