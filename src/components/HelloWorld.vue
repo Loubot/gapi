@@ -215,7 +215,7 @@
             </v-layout>
             
         </v-container>
-        {{ dateObject }}
+        {{ dateObjectd }}
     </div>
 </template>
 
@@ -242,6 +242,7 @@ export default {
   mixins: [CalendarMathMixin],
   data() {
       return {
+        dateObjectd: {},
         startTime: null,
         endTime: null,
         dateObject: {},
@@ -301,6 +302,9 @@ export default {
         },
 
         onClickDay(d) {
+            this.dateObject.newEventStartDate = d.toLocaleDateString()
+            this.dateObject.newEventEndDate = d.toLocaleDateString()
+            console.log( this.dateObject.newEventEndDate )
             this.message = `You clicked: ${d.toLocaleDateString()}`
         },
         onClickEvent(e) {
@@ -419,14 +423,15 @@ export default {
 
       insertEvent() {
         let vm = this
-        console.log( vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime )
-        console.log( vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime )
+        vm.dateObjectd = new Date( vm.dateObject.newEventStartDate + " " + vm.dateObject.startTime )
+        // console.log( new Date( vm.dateObject.newEventStartDate ).toISOString() )
+        // console.log( new Date( vm.dateObject.newEventEndDate ).toISOString() )
         var event = {
                 
             'summary': vm.dateObject.newEventTitle,
             'description': 'description',
-            'start': {'dateTime': vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime + ":00+01:00"  },
-            'end': { 'dateTime': vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime + ":00+01:00" },
+            'start': {'dateTime': new Date( vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime ) },
+            'end': { 'dateTime': new Date( vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime ) },
             'attendees': [
                 { 'email': 'louisangelini@gmail.com' }
             ],
