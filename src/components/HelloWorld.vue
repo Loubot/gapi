@@ -423,15 +423,17 @@ export default {
 
       insertEvent() {
         let vm = this
-        vm.dateObjectd = new Date( vm.dateObject.newEventStartDate + " " + vm.dateObject.startTime )
+        vm.dateObjectd = vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime + ":00+01:00"
+            
+
         // console.log( new Date( vm.dateObject.newEventStartDate ).toISOString() )
         // console.log( new Date( vm.dateObject.newEventEndDate ).toISOString() )
         var event = {
                 
             'summary': vm.dateObject.newEventTitle,
             'description': 'description',
-            'start': {'dateTime': new Date( vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime ) },
-            'end': { 'dateTime': new Date( vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime ) },
+            'start': {'dateTime': vm.dateObject.newEventStartDate + "T" + vm.dateObject.startTime + ":00+01:00" },
+            'end': { 'dateTime': vm.dateObject.newEventEndDate + "T" + vm.dateObject.endTime + ":00+01:00"  },
             'attendees': [
                 { 'email': 'louisangelini@gmail.com' }
             ],
